@@ -57,7 +57,8 @@ cd ./output_bin
 for f in *.bin; do
     if [ -f "$f" ] && [[ "$f" != rs41-nfw-* ]]; then
         NEW_NAME="rs41-nfw-${pcb_model}-${CLEAN_FREQ}MHz-${foxHuntRadioPower}_PwrLvl-${TIMESTAMP}.bin"
-        mv "$f" "$NEW_NAME"
+        sudo mv "$f" "$NEW_NAME"
+        sudo chmod 777 "$NEW_NAME"
         echo "✅ Finished firmware: ./output_bin/$NEW_NAME"
     fi
 done
