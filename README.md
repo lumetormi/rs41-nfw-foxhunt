@@ -2,7 +2,41 @@
 In this fork I've focused around changing the functionality of the foxhunting mode specifically, for example **FM-audible CW** transmission in addition to the upward audible tones.
 Also making the build process essentially 'free' using Github Actions, which will let users simply clone this repo, make changes and have it built hassle-free.
 
-## **Vaisala RS41 New Firmware** (*RS41 Nevvman's Firmware*) <br>
+## Compile using Github Actions (Online, Free)
+1. Fork this repo to your Github account
+
+![alt text](images/step1.png)
+
+2. Open "Actions" tab and then choose "RS41-NFW Firmware Compiler"
+
+![alt text](images/step2.png)
+
+3. Choose "Run workflow", then in the popup menu change options how you'd like to and finally click the green "Run workflow" button
+
+![alt text](images/step3.png)
+
+4. After about 1 minute, when the build has succeeded with green results, refresh the page in your browser
+
+![alt text](images/step4.png)
+
+5. Now you can download the build result
+
+![alt text](images/step5.png)
+
+## Compile locally using Docker
+
+Ensure you have Docker installed and run the following commands to compile:
+
+```bash
+chmod +x ./compile-local-docker.sh
+./compile-local-docker.sh
+```
+
+## Flashing the .bin file to radiosonde
+
+See the documentation about it [here](./fw/FLASHING.md)
+
+## Onwards is original readme: **Vaisala RS41 New Firmware** (*RS41 Nevvman's Firmware*) <br>
 **NOTE:** This firmware works with the **ALL** variants of RS41 radiosondes, with the new (2023 and 2025) ones too, bringing full hardware and software support with lots of features for everyone. More below.<br><br>
 Vaisala some time ago began launching new RS41 sonde revisions, with new internal design. They can be recognized by a last digit of 4 or 5 of the PCB model (eg. `RSM414`, `RSM424`, `RSM425`). This firmware is an approach for reusing them as amateur devices for many different purposes. It brings full and thorough support for [all revisions](../hw/README.md#older-vs-newer---how-do-i-know-which-one-im-holding-now).<br>
 
