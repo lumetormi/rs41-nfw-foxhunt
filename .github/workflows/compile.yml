@@ -138,7 +138,7 @@ jobs:
         id: datetime
         run: |
           # Generates a clean timestamp (e.g., 2026-06-16_15-46)
-          echo "timestamp=$(date +'%Y-%m-%d_%H-%M')" >> $GITHUB_OUTPUT
+          echo "timestamp=$(date +'%Y-%m-%d_%H-%M-%S')" >> $GITHUB_OUTPUT
 
       - name: Rename Compiled Binaries
         run: |
