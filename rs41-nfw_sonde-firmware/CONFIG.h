@@ -663,7 +663,7 @@ String boomSerialNumber = "";
          Hold time may vary ~1.5-3 s depending on CPU load.
    ============================================================ */
 
-constexpr int8_t buttonMode = 0;
+constexpr int8_t buttonMode = 1;
 
 
 /* ============================================================
