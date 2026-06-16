@@ -54,7 +54,7 @@ jobs:
       - name: Compile Sonde Firmware Binary
         run: |
           mkdir -p ./output_bin
-          arduino-cli compile --fqbn STMicroelectronics:stm32:Nucleo_32:pnum=DIOT_L412KB \
+          arduino-cli compile --fqbn STMicroelectronics:stm32:Nucleo_32:pnum=NUCLEO_L412KB \
             --output-dir ./output_bin \
             ./rs41-nfw_sonde-firmware/rs41-nfw_sonde-firmware.ino
 
