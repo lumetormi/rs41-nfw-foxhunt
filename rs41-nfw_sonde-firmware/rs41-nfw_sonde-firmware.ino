@@ -761,21 +761,18 @@ void rttySendCharacter(char character) {
 //morse
 void transmitMorseChar(const char* morseChar, int unitTime) {
   while (*morseChar) {
-    setRadioModulation(2);
-    setRadioFrequency((foxHuntFrequency - 0.003));
-
     if (*morseChar == '.') {
       // Dot: 1 unit time on
-      radioEnableTx();
+      // radioEnableTx();
       // delay(unitTime);
       generateSi4032FmTone(600, unitTime);
-      radioDisableTx();
+      // radioDisableTx();
     } else if (*morseChar == '-') {
       // Dash: 3 unit times on
-      radioEnableTx();
+      // radioEnableTx();
       // delay(3 * unitTime);
       generateSi4032FmTone(600, 3 * unitTime);
-      radioDisableTx();
+      // radioDisableTx();
     }
     // Space between elements: 1 unit time off
     delay(unitTime);
@@ -787,6 +784,11 @@ void transmitMorseChar(const char* morseChar, int unitTime) {
 }
 
 void transmitMorseString(const char* str, int unitTime) {
+  setRadioModulation(2);
+  setRadioFrequency((foxHuntFrequency - 0.003));
+
+  radioEnableTx();
+
   while (*str) {
     char c = *str++;
 
@@ -802,6 +804,8 @@ void transmitMorseString(const char* str, int unitTime) {
     // Space between characters: 3 unit times off
     delay(3 * unitTime);
   }
+
+  radioDisableTx();
 }
 
 //4fsk implementation for horus
