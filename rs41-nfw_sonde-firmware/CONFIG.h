@@ -125,7 +125,7 @@ constexpr int8_t   pipRadioPower = 7;
    Leaving it false gives the same payload fields as Horus V2.
    ============================================================ */
 
-constexpr bool horusV3Enable = true;   // Enable Horus V3 TX
+constexpr bool horusV3Enable = false;   // Enable Horus V3 TX
 
 constexpr float horusV3FreqTable[] = {437.6};
 // Frequency table (MHz). Sonde cycles through all entries each TX window.
@@ -165,7 +165,7 @@ constexpr int8_t   horusRadioPower = 5;    // TX power (see Pip section for key)
    SECTION 7 - APRS MODE
    ============================================================ */
 
-constexpr bool aprsEnable = true;   // Enable APRS TX
+constexpr bool aprsEnable = false;   // Enable APRS TX
 
 constexpr float aprsFreqTable[] = {432.5};
 // Same format as horusV3FreqTable.
@@ -236,16 +236,16 @@ constexpr uint8_t morseBeaconRepeat = 1;    // Times the text is repeated per TX
          Use a SSB/CW receiver to decode it.
    ============================================================ */
 
-constexpr bool foxHuntMode                       = false; // Enable fox-hunt mode
+constexpr bool foxHuntMode                       = true; // Enable fox-hunt mode
 constexpr bool foxHuntFmMelody                   = true;  // Transmit FM melody
 constexpr bool foxHuntCwTone                     = false; // Transmit a 10 s CW tone instead of melody
 constexpr bool foxHuntMorseMarker                = true;  // Transmit Morse marker after melody (CW)
 String foxMorseMsg                     = "N0CALL N0CALL FOX";
 constexpr bool foxHuntLowVoltageAdditionalMarker = true;  // Send extra marker when battery is low
-String foxMorseMsgVbat                 = "N0CALL N0CALL FOX 11.123456 12.456789";
+String foxMorseMsgVbat                 = "N0CALL LOW BATTERY";
 constexpr float    foxHuntFrequency         = 434.5; // TX frequency (MHz)
 constexpr uint16_t foxHuntTransmissionDelay = 0;     // Delay between TX cycles (ms)
-constexpr int8_t   foxHuntRadioPower        = 7;     // TX power (see Pip section for key)
+constexpr int8_t   foxHuntRadioPower        = 5;     // TX power (see Pip section for key)
 
 
 /* ============================================================

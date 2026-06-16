@@ -10,14 +10,42 @@ on:
         options:
           - RSM4x4
           - RSM4x2
-      callsign:
-        description: 'Amateur Radio Callsign (e.g., N0CALL)'
-        required: true
-        default: 'N0CALL'
-      frequency:
-        description: 'TX Frequency in MHz (e.g., 434.300)'
-        required: true
-        default: '434.300'
+      foxHuntFmMelody:
+        description: 'Transmit FM Melody'
+        type: boolean
+        default: true
+      foxHuntCwTone:
+        description: 'Transmit 10s CW Tone (instead of melody)'
+        type: boolean
+        default: false
+      foxHuntMorseMarker:
+        description: 'Transmit Morse Marker after melody'
+        type: boolean
+        default: true
+      foxMorseMsg:
+        description: 'Morse Code Message'
+        type: string
+        default: 'N0CALL N0CALL FOX'
+      foxHuntLowVoltageAdditionalMarker:
+        description: 'Send extra marker when battery is low'
+        type: boolean
+        default: true
+      foxMorseMsgVbat:
+        description: 'Low Battery Morse Message'
+        type: string
+        default: 'N0CALL LOW BATTERY'
+      foxHuntFrequency:
+        description: 'TX Frequency (MHz)'
+        type: string
+        default: '434.500'
+      foxHuntTransmissionDelay:
+        description: 'Delay between TX cycles (ms)'
+        type: string
+        default: '0'
+      foxHuntRadioPower:
+        description: 'TX Power index 1 (1mW) - 7 (100mW)'
+        type: string
+        default: '5'
 
 jobs:
   compile_firmware:
@@ -47,17 +75,41 @@ jobs:
           arduino-cli core update-index --additional-urls "$STM32_URL"
           arduino-cli core install STMicroelectronics:stm32 --additional-urls "$STM32_URL"
 
-      - name: Inject User Configurations
+      - name: Dynamically Update CONFIG.h
         run: |
-          # Finds the config/header files and adjusts values natively on the workspace clone
-          TARGET_DIR="rs41-nfw_sonde-firmware"
+          CONFIG_FILE="./rs41-nfw_sonde-firmware/CONFIG.h"
           
-          if [ -d "$TARGET_DIR" ]; then
-            cd "$TARGET_DIR"
-            # Modify config using values passed safely from the GitHub UI form
-            sed -i 's/#define CALLSIGN .*/#define CALLSIGN "${{ github.event.inputs.callsign }}"/g' *.h *.ino || true
-            sed -i 's/#define FREQUENCY .*/#define FREQUENCY ${{ github.event.inputs.frequency }}/g' *.h *.ino || true
-          fi
+          # Read workflow inputs, falling back to defaults if triggered by push/PR
+          FOX_MODE="${{ github.event.inputs.foxHuntMode || 'true' }}"
+          FM_MELODY="${{ github.event.inputs.foxHuntFmMelody || 'true' }}"
+          CW_TONE="${{ github.event.inputs.foxHuntCwTone || 'false' }}"
+          MORSE_MARKER="${{ github.event.inputs.foxHuntMorseMarker || 'true' }}"
+          MORSE_MSG="${{ github.event.inputs.foxMorseMsg || 'N0CALL N0CALL FOX' }}"
+          LOW_VOLT_MARKER="${{ github.event.inputs.foxHuntLowVoltageAdditionalMarker || 'true' }}"
+          MORSE_MSG_VBAT="${{ github.event.inputs.foxMorseMsgVbat || 'N0CALL LOW BATTERY' }}"
+          FREQ="${{ github.event.inputs.foxHuntFrequency || '434.5' }}"
+          DELAY="${{ github.event.inputs.foxHuntTransmissionDelay || '0' }}"
+          POWER="${{ github.event.inputs.foxHuntRadioPower || '5' }}"
+
+          echo "=== Modifying CONFIG.h values ==="
+          # Replace booleans
+          sed -i "s/constexpr bool foxHuntMode.*/constexpr bool foxHuntMode = $FOX_MODE;/g" $CONFIG_FILE
+          sed -i "s/constexpr bool foxHuntFmMelody.*/constexpr bool foxHuntFmMelody = $FM_MELODY;/g" $CONFIG_FILE
+          sed -i "s/constexpr bool foxHuntCwTone.*/constexpr bool foxHuntCwTone = $CW_TONE;/g" $CONFIG_FILE
+          sed -i "s/constexpr bool foxHuntMorseMarker.*/constexpr bool foxHuntMorseMarker = $MORSE_MARKER;/g" $CONFIG_FILE
+          sed -i "s/constexpr bool foxHuntLowVoltageAdditionalMarker.*/constexpr bool foxHuntLowVoltageAdditionalMarker = $LOW_VOLT_MARKER;/g" $CONFIG_FILE
+          
+          # Replace strings (escaped quotes added)
+          sed -i "s/String foxMorseMsg.*/String foxMorseMsg = \"$MORSE_MSG\";/g" $CONFIG_FILE
+          sed -i "s/String foxMorseMsgVbat.*/String foxMorseMsgVbat = \"$MORSE_MSG_VBAT\";/g" $CONFIG_FILE
+          
+          # Replace numeric settings
+          sed -i "s/constexpr float    foxHuntFrequency.*/constexpr float foxHuntFrequency = $FREQ;/g" $CONFIG_FILE
+          sed -i "s/constexpr uint16_t foxHuntTransmissionDelay.*/constexpr uint16_t foxHuntTransmissionDelay = $DELAY;/g" $CONFIG_FILE
+          sed -i "s/constexpr int8_t   foxHuntRadioPower.*/constexpr int8_t foxHuntRadioPower = $POWER;/g" $CONFIG_FILE
+          
+          echo "=== Verification of Modified Lines ==="
+          grep -E "foxHuntMode|foxHuntFmMelody|foxHuntCwTone|foxHuntMorseMarker|foxMorseMsg|foxHuntLowVoltageAdditionalMarker|foxHuntFrequency|foxHuntTransmissionDelay|foxHuntRadioPower" $CONFIG_FILE
 
       - name: Map Code Parameters
         id: configure
