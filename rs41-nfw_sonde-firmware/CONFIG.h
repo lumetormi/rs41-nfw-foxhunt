@@ -213,7 +213,7 @@ constexpr int8_t   rttyRadioPower = 7;      // TX power (see Pip section for key
 
 constexpr bool morseEnable        = false;  // Enable Morse TX
 constexpr float  morseFrequencyMhz = 434.6; // TX frequency (MHz)
-constexpr uint16_t morseUnitTime  = 40;     // Unit time (ms); dot = 1 unit, dash = 3 units
+constexpr uint16_t morseUnitTime  = 100;     // Unit time (ms); dot = 1 unit, dash = 3 units
 constexpr int8_t   morseRadioPower = 7;     // TX power (see Pip section for key)
 
 // Beacon mode: instead of live telemetry, transmit a fixed custom text.
