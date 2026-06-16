@@ -1,4 +1,7 @@
-# RS41-NFW - Versatile, custom firmware for ALL revisions of Vaisala RS41 radiosondes
+# RS41-NFW-FOXHUNT - a modified version of RS41-NFW made for specific foxhunting functionality needs
+In this fork I've focused around changing the functionality of the foxhunting mode specifically, for example **FM-audible CW** transmission in addition to the upward audible tones.
+Also making the build process essentially 'free' using Github Actions, which will let users simply clone this repo, make changes and have it built hassle-free.
+
 ## **Vaisala RS41 New Firmware** (*RS41 Nevvman's Firmware*) <br>
 **NOTE:** This firmware works with the **ALL** variants of RS41 radiosondes, with the new (2023 and 2025) ones too, bringing full hardware and software support with lots of features for everyone. More below.<br><br>
 Vaisala some time ago began launching new RS41 sonde revisions, with new internal design. They can be recognized by a last digit of 4 or 5 of the PCB model (eg. `RSM414`, `RSM424`, `RSM425`). This firmware is an approach for reusing them as amateur devices for many different purposes. It brings full and thorough support for [all revisions](../hw/README.md#older-vs-newer---how-do-i-know-which-one-im-holding-now).<br>
