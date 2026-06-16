@@ -140,9 +140,31 @@ jobs:
           # Generates a clean timestamp (e.g., 2026-06-16_15-46)
           echo "timestamp=$(date +'%Y-%m-%d_%H-%M')" >> $GITHUB_OUTPUT
 
+      - name: Rename Compiled Binaries
+        run: |
+          # Fallback values for automatic push/PR triggers
+          PLATFORM="${{ github.event.inputs.pcb_platform || 'RSM4x4' }}"
+          FREQ="${{ github.event.inputs.foxHuntFrequency || '434.5' }}"
+          POWER="${{ github.event.inputs.foxHuntRadioPower || '5' }}"
+          TIMESTAMP="${{ steps.datetime.outputs.timestamp }}"
+          
+          # Clean up any potential spaces or trailing dots in frequency strings for filename safety
+          CLEAN_FREQ=$(echo "$FREQ" | sed 's/[^0-9.]//g')
+          
+          echo "=== Renaming target .bin files ==="
+          cd ./output_bin
+          for f in *.bin; do
+            if [ -f "$f" ]; then
+              # Formats file to: rs41-nfw-RSM4x4-434.5-5dBm-2026-06-16_15-46.bin
+              NEW_NAME="rs41-nfw-${PLATFORM}-${CLEAN_FREQ}MHz-${POWER}_PwrLvl-${TIMESTAMP}.bin"
+              mv "$f" "$NEW_NAME"
+              echo "Renamed $f to $NEW_NAME"
+            fi
+          done
+
       - name: Upload Finished Firmware Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: rs41-nfw-firmware-${{ github.event.inputs.pcb_model }}-${{ github.event.inputs.callsign }}-${{ github.event.inputs.frequency }}-${{ steps.datetime.outputs.timestamp }}
+          name: rs41-nfw-firmware-${{ github.event.inputs.pcb_model }}-${{ github.event.inputs.foxHuntFrequency }}-${{ github.event.inputs.foxHuntRadioPower }}-${{ steps.datetime.outputs.timestamp }}
           path: ./output_bin/*.bin
           if-no-files-found: error
