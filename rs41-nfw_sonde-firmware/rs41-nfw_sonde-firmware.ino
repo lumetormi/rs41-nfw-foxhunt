@@ -4439,10 +4439,11 @@ void foxHuntModeLoop() {
     foxHuntMiscHandler();
 
     if (foxHuntCwTone) {
-      setRadioModulation(0);  // CW modulation
-      setRadioFrequency(foxHuntFrequency);
+      // setRadioModulation(0);  // CW modulation
+      setRadioModulation(2);
+      setRadioFrequency(foxHuntFrequency - 0.003);
       radioEnableTx();
-      delay(10000);
+      generateSi4032FmTone(600, 10000);
       radioDisableTx();
     }
 
