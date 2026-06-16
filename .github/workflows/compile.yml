@@ -92,21 +92,21 @@ jobs:
           POWER="${{ github.event.inputs.foxHuntRadioPower || '5' }}"
 
           echo "=== Modifying CONFIG.h values ==="
-          # Replace booleans
-          sed -i "s/constexpr bool foxHuntMode.*/constexpr bool foxHuntMode = $FOX_MODE;/g" $CONFIG_FILE
-          sed -i "s/constexpr bool foxHuntFmMelody.*/constexpr bool foxHuntFmMelody = $FM_MELODY;/g" $CONFIG_FILE
-          sed -i "s/constexpr bool foxHuntCwTone.*/constexpr bool foxHuntCwTone = $CW_TONE;/g" $CONFIG_FILE
-          sed -i "s/constexpr bool foxHuntMorseMarker.*/constexpr bool foxHuntMorseMarker = $MORSE_MARKER;/g" $CONFIG_FILE
-          sed -i "s/constexpr bool foxHuntLowVoltageAdditionalMarker.*/constexpr bool foxHuntLowVoltageAdditionalMarker = $LOW_VOLT_MARKER;/g" $CONFIG_FILE
+          # Replace booleans using precise match configurations
+          sed -i "s/\(constexpr bool foxHuntMode\s*=\).*/\1 $FOX_MODE;/g" $CONFIG_FILE
+          sed -i "s/\(constexpr bool foxHuntFmMelody\s*=\).*/\1 $FM_MELODY;/g" $CONFIG_FILE
+          sed -i "s/\(constexpr bool foxHuntCwTone\s*=\).*/\1 $CW_TONE;/g" $CONFIG_FILE
+          sed -i "s/\(constexpr bool foxHuntMorseMarker\s*=\).*/\1 $MORSE_MARKER;/g" $CONFIG_FILE
+          sed -i "s/\(constexpr bool foxHuntLowVoltageAdditionalMarker\s*=\).*/\1 $LOW_VOLT_MARKER;/g" $CONFIG_FILE
           
-          # Replace strings (escaped quotes added)
-          sed -i "s/String foxMorseMsg.*/String foxMorseMsg = \"$MORSE_MSG\";/g" $CONFIG_FILE
-          sed -i "s/String foxMorseMsgVbat.*/String foxMorseMsgVbat = \"$MORSE_MSG_VBAT\";/g" $CONFIG_FILE
+          # Replace exact string variables (fixes the overlap issue)
+          sed -i "s/\(String foxMorseMsg\s*=\).*/\1 \"$MORSE_MSG\";/g" $CONFIG_FILE
+          sed -i "s/\(String foxMorseMsgVbat\s*=\).*/\1 \"$MORSE_MSG_VBAT\";/g" $CONFIG_FILE
           
           # Replace numeric settings
-          sed -i "s/constexpr float    foxHuntFrequency.*/constexpr float foxHuntFrequency = $FREQ;/g" $CONFIG_FILE
-          sed -i "s/constexpr uint16_t foxHuntTransmissionDelay.*/constexpr uint16_t foxHuntTransmissionDelay = $DELAY;/g" $CONFIG_FILE
-          sed -i "s/constexpr int8_t   foxHuntRadioPower.*/constexpr int8_t foxHuntRadioPower = $POWER;/g" $CONFIG_FILE
+          sed -i "s/\(constexpr float\s\+foxHuntFrequency\s*=\).*/\1 $FREQ;/g" $CONFIG_FILE
+          sed -i "s/\(constexpr uint16_t foxHuntTransmissionDelay\s*=\).*/\1 $DELAY;/g" $CONFIG_FILE
+          sed -i "s/\(constexpr int8_t\s\+foxHuntRadioPower\s*=\).*/\1 $POWER;/g" $CONFIG_FILE
           
           echo "=== Verification of Modified Lines ==="
           grep -E "foxHuntMode|foxHuntFmMelody|foxHuntCwTone|foxHuntMorseMarker|foxMorseMsg|foxHuntLowVoltageAdditionalMarker|foxHuntFrequency|foxHuntTransmissionDelay|foxHuntRadioPower" $CONFIG_FILE
