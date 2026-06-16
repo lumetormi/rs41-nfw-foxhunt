@@ -1,0 +1,72 @@
+name: RS41-NFW Firmware Compiler
+on:
+  workflow_dispatch:
+    inputs:
+      callsign:
+        description: 'Amateur Radio Callsign (e.g., N0CALL)'
+        required: true
+        default: 'N0CALL'
+      frequency:
+        description: 'TX Frequency in MHz (e.g., 434.300)'
+        required: true
+        default: '434.300'
+
+jobs:
+  compile_firmware:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Cache Arduino Core Toolchain
+        id: cache-arduino
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.arduino15/packages
+            ~/.arduino15/package_stmicroelectronics_index.json
+          key: ${{ runner.os }}-stm32-core-v1
+
+      - name: Install Arduino CLI
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sudo BINDIR=/usr/local/bin sh
+
+      - name: Install STM32 Boards Platform
+        if: steps.cache-arduino.outputs.cache-hit != 'true'
+        run: |
+          arduino-cli config init
+          STM32_URL="https://github.com/stm32duino/BoardManagerFiles/raw/main/package_stmicroelectronics_index.json"
+          arduino-cli core update-index --additional-urls "$STM32_URL"
+          arduino-cli core install STMicroelectronics:stm32 --additional-urls "$STM32_URL"
+
+      - name: Inject User Configurations
+        run: |
+          # Finds the config/header files and adjusts values natively on the workspace clone
+          TARGET_DIR="rs41-nfw_sonde-firmware"
+          
+          if [ -d "$TARGET_DIR" ]; then
+            cd "$TARGET_DIR"
+            # Modify config using values passed safely from the GitHub UI form
+            sed -i 's/#define CALLSIGN .*/#define CALLSIGN "${{ github.event.inputs.callsign }}"/g' *.h *.ino || true
+            sed -i 's/#define FREQUENCY .*/#define FREQUENCY ${{ github.event.inputs.frequency }}/g' *.h *.ino || true
+          fi
+
+      - name: Compile Sonde Firmware Binary
+        run: |
+          mkdir -p ./output_bin
+          arduino-cli compile --fqbn STMicroelectronics:stm32:Nucleo_32:pnum=DIOT_L412KB \
+            --output-dir ./output_bin \
+            ./rs41-nfw_sonde-firmware/rs41-nfw_sonde-firmware.ino
+
+      - name: Get Current Date and Time
+        id: datetime
+        run: |
+          # Generates a clean timestamp (e.g., 2026-06-16_15-46)
+          echo "timestamp=$(date +'%Y-%m-%d_%H-%M')" >> $GITHUB_OUTPUT
+
+      - name: Upload Finished Firmware Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rs41-nfw-firmware-${{ github.event.inputs.callsign }}-${{ github.event.inputs.frequency }}-${{ steps.datetime.outputs.timestamp }}
+          path: ./output_bin/*.bin
+          if-no-files-found: error
