@@ -8,8 +8,8 @@ on:
         default: 'RSM425'
         type: choice
         options:
-          - RSM414
-          - RSM425
+          - RSM4x4
+          - RSM4x2
       callsign:
         description: 'Amateur Radio Callsign (e.g., N0CALL)'
         required: true
