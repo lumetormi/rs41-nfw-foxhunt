@@ -5,7 +5,7 @@ on:
       pcb_model:
         description: 'Select the Sonde PCB Model'
         required: true
-        default: 'RSM425'
+        default: 'RSM4x4'
         type: choice
         options:
           - RSM4x4
@@ -59,11 +59,26 @@ jobs:
             sed -i 's/#define FREQUENCY .*/#define FREQUENCY ${{ github.event.inputs.frequency }}/g' *.h *.ino || true
           fi
 
-      - name: Compile Sonde Firmware Binary
+      - name: Map Code Parameters
+        id: configure
+        run: |
+          # Use choice from dropdown if triggered manually, otherwise fall back to RSM4x4
+          PLATFORM="${{ github.event.inputs.pcb_model || 'RSM4x4' }}"
+          
+          if [ "$PLATFORM" = "RSM4x4" ]; then
+            FQBN="STMicroelectronics:stm32:GenL4:pnum=GENERIC_L412RBTXP,opt=osstd"
+          else
+            FQBN="STMicroelectronics:stm32:GenF1:pnum=GENERIC_F100C8TX,opt=oslto"
+          fi
+          
+          echo "target_fqbn=$FQBN" >> $GITHUB_OUTPUT
+          echo "target_flag=-D$PLATFORM" >> $GITHUB_OUTPUT
+  
+      - name: Compile Firmware
         run: |
           mkdir -p ./output_bin
-          arduino-cli compile --fqbn STMicroelectronics:stm32:Nucleo_32:pnum=NUCLEO_L412KB \
-            --build-property "compiler.cpp.extra_flags=-D${{ github.event.inputs.pcb_model }}" \
+          arduino-cli compile --fqbn "${{ steps.configure.outputs.target_fqbn }}" \
+            --build-property "compiler.cpp.extra_flags=${{ steps.configure.outputs.target_flag }}" \
             --output-dir ./output_bin \
             ./rs41-nfw_sonde-firmware/rs41-nfw_sonde-firmware.ino
 
@@ -76,6 +91,6 @@ jobs:
       - name: Upload Finished Firmware Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: rs41-nfw-firmware-${{ github.event.inputs.callsign }}-${{ github.event.inputs.frequency }}-${{ steps.datetime.outputs.timestamp }}
+          name: rs41-nfw-firmware-${{ github.event.inputs.pcb_model }}-${{ github.event.inputs.callsign }}-${{ github.event.inputs.frequency }}-${{ steps.datetime.outputs.timestamp }}
           path: ./output_bin/*.bin
           if-no-files-found: error
