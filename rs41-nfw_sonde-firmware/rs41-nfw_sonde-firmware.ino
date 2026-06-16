@@ -761,15 +761,20 @@ void rttySendCharacter(char character) {
 //morse
 void transmitMorseChar(const char* morseChar, int unitTime) {
   while (*morseChar) {
+    setRadioModulation(2);
+    setRadioFrequency((foxHuntFrequency - 0.003));
+
     if (*morseChar == '.') {
       // Dot: 1 unit time on
       radioEnableTx();
-      delay(unitTime);
+      // delay(unitTime);
+      generateSi4032FmTone(600, unitTime);
       radioDisableTx();
     } else if (*morseChar == '-') {
       // Dash: 3 unit times on
       radioEnableTx();
-      delay(3 * unitTime);
+      // delay(3 * unitTime);
+      generateSi4032FmTone(600, 3 * unitTime);
       radioDisableTx();
     }
     // Space between elements: 1 unit time off
