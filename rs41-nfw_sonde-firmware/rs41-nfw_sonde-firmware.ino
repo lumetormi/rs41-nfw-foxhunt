@@ -4481,7 +4481,7 @@ void foxHuntModeLoop() {
   }
 }
 
-void transmitLongTone(int toneHz, int lengthInMs, int radioPwr, const char* morseMsg) {
+void transmitLongTone(int toneHz, int lengthInMs, int radioPwr, String morseMsg) {
   setRadioModulation(2);
   setRadioFrequency((foxHuntFrequency - 0.003));
   setRadioPower(radioPwr);
