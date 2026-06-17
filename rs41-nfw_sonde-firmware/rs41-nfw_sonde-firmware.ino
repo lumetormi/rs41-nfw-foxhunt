@@ -4490,7 +4490,8 @@ void transmitLongTone(int toneHz, int lengthInMs, int radioPwr, String morseMsg)
   generateSi4032FmTone(toneHz, lengthInMs);
   buttonHandlerSimplified();
   delay(1000);
-  transmitMorseString(morseMsg, morseUnitTime); // Send some morse message, to inform of current level and incoming power lowering
+  const char* morseMsgCstr = morseMsg.c_str();
+  transmitMorseString(morseMsgCstr, morseUnitTime); // Send some morse message, to inform of current level and incoming power lowering
 
   buttonHandlerSimplified();
   radioDisableTx();
@@ -4506,7 +4507,8 @@ void foxHuntModeLoopV2() {
     
     // 1. send message in morse (for example "FOX1 FOX1 FOX1")
     setRadioPower(foxHuntRadioPower);
-    transmitMorseString(foxMorseMsg, morseUnitTime);
+    const char* foxMorseMsgCstr = foxMorseMsg.c_str();
+    transmitMorseString(foxMorseMsgCstr, morseUnitTime);
 
     // 2. 20 seconds of 600Hz tone at specified max power
     transmitLongTone(600, 20000, foxHuntRadioPower, 'H H');
