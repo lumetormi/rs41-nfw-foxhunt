@@ -22,6 +22,7 @@ docker run --rm \
     
     echo "=== 1. Modifying CONFIG.h values ==="
     sed -i "s/\(constexpr bool foxHuntMode\s*=\).*/\1 $foxHuntMode;/g" $CONFIG_FILE
+    sed -i "s/\(constexpr bool foxHuntSecondaryMode\s*=\).*/\1 $foxHuntSecondaryMode;/g" $CONFIG_FILE
     sed -i "s/\(constexpr bool foxHuntFmMelody\s*=\).*/\1 $foxHuntFmMelody;/g" $CONFIG_FILE
     sed -i "s/\(constexpr bool foxHuntCwTone\s*=\).*/\1 $foxHuntCwTone;/g" $CONFIG_FILE
     sed -i "s/\(constexpr bool foxHuntMorseMarker\s*=\).*/\1 $foxHuntMorseMarker;/g" $CONFIG_FILE

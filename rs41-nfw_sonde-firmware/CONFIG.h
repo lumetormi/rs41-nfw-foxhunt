@@ -237,6 +237,7 @@ constexpr uint8_t morseBeaconRepeat = 1;    // Times the text is repeated per TX
    ============================================================ */
 
 constexpr bool foxHuntMode                       = true; // Enable fox-hunt mode
+constexpr bool foxHuntSecondaryMode              = true; // Enable alternative fox-hunt mode
 constexpr bool foxHuntFmMelody                   = true;  // Transmit FM melody
 constexpr bool foxHuntCwTone                     = false; // Transmit a 10 s CW tone instead of melody
 constexpr bool foxHuntMorseMarker                = true;  // Transmit Morse marker after melody (CW)

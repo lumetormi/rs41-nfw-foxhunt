@@ -4481,6 +4481,50 @@ void foxHuntModeLoop() {
   }
 }
 
+void transmitLongTone(int toneHz, int lengthInMs, int radioPwr, const char* morseMsg) {
+  setRadioModulation(2);
+  setRadioFrequency((foxHuntFrequency - 0.003));
+  setRadioPower(radioPwr);
+  radioEnableTx();
+
+  generateSi4032FmTone(toneHz, lengthInMs);
+  buttonHandlerSimplified();
+  delay(1000);
+  transmitMorseString(morseMsg, morseUnitTime); // Send some morse message, to inform of current level and incoming power lowering
+
+  buttonHandlerSimplified();
+  radioDisableTx();
+}
+
+// TX power:  0=-1 dBm (~0.8 mW)  1=2 dBm (~1.6 mW)  2=5 dBm (~3 mW)
+//            3=8 dBm (~6 mW)     4=11 dBm (~12 mW)   5=14 dBm (25 mW)
+//            6=17 dBm (50 mW)    7=20 dBm (100 mW)
+
+void foxHuntModeLoopV2() {
+  for (;;) {
+    foxHuntMiscHandler();
+    
+    // 1. send message in morse (for example "FOX1 FOX1 FOX1")
+    setRadioPower(foxHuntRadioPower);
+    transmitMorseString(foxMorseMsg, morseUnitTime);
+
+    // 2. 20 seconds of 600Hz tone at specified max power
+    transmitLongTone(600, 20000, foxHuntRadioPower, 'H H');
+
+    // 3. 20 seconds of 600Hz tone at 6mW power
+    transmitLongTone(600, 20000, 3, 'M M');
+
+    // 4. 20 seconds of 600Hz tone at 1mW power
+    transmitLongTone(600, 20000, 1, 'L L');
+
+    // 5. end of cycle
+    foxHuntMiscHandler();
+    delay(foxHuntTransmissionDelay);
+    foxHuntMiscHandler();
+  }
+}
+
+
 void humidityModuleHeaterPowerControl(unsigned int heaterPower) {  //0 - OFF, 1-255 - only low power heater PWM, 256-500 - low power heater at max and high power heater PWM-controlled
   extHeaterPwmStatus = heaterPower;
 
@@ -5788,6 +5832,11 @@ void setup() {
     xdataSerial.println("[info]: HW init done");
   }
 
+  if (foxHuntMode && foxHuntSecondaryMode) {
+    shutdownGPS();
+    foxHuntModeLoopV2();
+  }
+  
   if (foxHuntMode) {
     shutdownGPS();
     foxHuntModeLoop();

@@ -10,6 +10,10 @@ on:
         options:
           - RSM4x4
           - RSM4x2
+      foxHuntSecondaryMode:
+        description: 'Alternative foxhunt mode with transmissions at different power levels'
+        type: boolean
+        default: false
       foxHuntFmMelody:
         description: 'Transmit FM Melody'
         type: boolean
@@ -81,6 +85,7 @@ jobs:
           
           # Read workflow inputs, falling back to defaults if triggered by push/PR
           FOX_MODE="${{ github.event.inputs.foxHuntMode || 'true' }}"
+          FOX_SECOND_MODE="${{ github.event.inputs.foxHuntSecondaryMode || 'false' }}"
           FM_MELODY="${{ github.event.inputs.foxHuntFmMelody || 'true' }}"
           CW_TONE="${{ github.event.inputs.foxHuntCwTone || 'false' }}"
           MORSE_MARKER="${{ github.event.inputs.foxHuntMorseMarker || 'true' }}"
@@ -94,6 +99,7 @@ jobs:
           echo "=== Modifying CONFIG.h values ==="
           # Replace booleans using precise match configurations
           sed -i "s/\(constexpr bool foxHuntMode\s*=\).*/\1 $FOX_MODE;/g" $CONFIG_FILE
+          sed -i "s/\(constexpr bool foxHuntSecondaryMode\s*=\).*/\1 $FOX_SECOND_MODE;/g" $CONFIG_FILE
           sed -i "s/\(constexpr bool foxHuntFmMelody\s*=\).*/\1 $FM_MELODY;/g" $CONFIG_FILE
           sed -i "s/\(constexpr bool foxHuntCwTone\s*=\).*/\1 $CW_TONE;/g" $CONFIG_FILE
           sed -i "s/\(constexpr bool foxHuntMorseMarker\s*=\).*/\1 $MORSE_MARKER;/g" $CONFIG_FILE
@@ -143,11 +149,18 @@ jobs:
       - name: Rename Compiled Binaries
         run: |
           # Fallback values for automatic push/PR triggers
+          MODE="${{ github.event.inputs.foxHuntSecondaryMode || 'false' }}"
           PLATFORM="${{ github.event.inputs.pcb_platform || 'RSM4x4' }}"
           FREQ="${{ github.event.inputs.foxHuntFrequency || '434.5' }}"
           POWER="${{ github.event.inputs.foxHuntRadioPower || '5' }}"
           TIMESTAMP="${{ steps.datetime.outputs.timestamp }}"
           
+          if [ "$MODE" = "true" ]; then
+              MODE="V2-TX"
+          else
+              MODE="default"
+          fi
+
           # Clean up any potential spaces or trailing dots in frequency strings for filename safety
           CLEAN_FREQ=$(echo "$FREQ" | sed 's/[^0-9.]//g')
           
@@ -156,7 +169,7 @@ jobs:
           for f in *.bin; do
             if [ -f "$f" ]; then
               # Formats file to: rs41-nfw-RSM4x4-434.5-5dBm-2026-06-16_15-46.bin
-              NEW_NAME="rs41-nfw-${PLATFORM}-${CLEAN_FREQ}MHz-${POWER}_PwrLvl-${TIMESTAMP}.bin"
+              NEW_NAME="rs41-nfw-${MODE}-${PLATFORM}-${CLEAN_FREQ}MHz-${POWER}_PwrLvl-${TIMESTAMP}.bin"
               mv "$f" "$NEW_NAME"
               echo "Renamed $f to $NEW_NAME"
             fi
