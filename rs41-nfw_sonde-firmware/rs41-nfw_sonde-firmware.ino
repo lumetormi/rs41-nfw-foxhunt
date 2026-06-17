@@ -4511,13 +4511,13 @@ void foxHuntModeLoopV2() {
     transmitMorseString(foxMorseMsgCstr, morseUnitTime);
 
     // 2. 20 seconds of 600Hz tone at specified max power
-    transmitLongTone(600, 20000, foxHuntRadioPower, 'H H');
+    transmitLongTone(600, 20000, foxHuntRadioPower, "H H");
 
     // 3. 20 seconds of 600Hz tone at 6mW power
-    transmitLongTone(600, 20000, 3, 'M M');
+    transmitLongTone(600, 20000, 3, "M M");
 
     // 4. 20 seconds of 600Hz tone at 1mW power
-    transmitLongTone(600, 20000, 1, 'L L');
+    transmitLongTone(600, 20000, 1, "L L");
 
     // 5. end of cycle
     foxHuntMiscHandler();
