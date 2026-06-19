@@ -4520,7 +4520,7 @@ void foxHuntModeLoopV2() {
     transmitLongTone(600, 20000, 3, "MM");
 
     // 4. 20 seconds of 600Hz tone at 1mW power
-    transmitLongTone(600, 20000, 1, "LL");
+    transmitLongTone(600, 20000, 0, "LL");
 
     // 5. end of cycle
     foxHuntMiscHandler();
