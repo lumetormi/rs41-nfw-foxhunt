@@ -805,7 +805,8 @@ void transmitMorseString(const char* str, int unitTime) {
     delay(3 * unitTime);
   }
 
-  radioDisableTx();
+  // disable for foxhunting purposes
+  // radioDisableTx();
 }
 
 //4fsk implementation for horus
@@ -4491,6 +4492,7 @@ void transmitLongTone(int toneHz, int lengthInMs, int radioPwr, String morseMsg)
   transmitMorseString(morseMsgCstr, morseUnitTime);
   delay(500);
   buttonHandlerSimplified();
+  radioEnableTx();
   generateSi4032FmTone(toneHz, lengthInMs);
   buttonHandlerSimplified();
   delay(500);
