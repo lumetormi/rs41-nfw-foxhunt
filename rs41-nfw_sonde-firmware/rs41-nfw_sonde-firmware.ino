@@ -4521,6 +4521,10 @@ void foxHuntModeLoopV2() {
     // 4. 20 seconds of 600Hz tone at 1mW power
     transmitLongTone(600, 20000, 0, "LL");
 
+    delay(500);
+    const char* morseEndCstr = "K".c_str();
+    transmitMorseString(morseEndCstr, morseUnitTime);
+
     // 5. end of cycle
     foxHuntMiscHandler();
     delay(foxHuntTransmissionDelay);
