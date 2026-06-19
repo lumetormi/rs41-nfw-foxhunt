@@ -4522,7 +4522,7 @@ void foxHuntModeLoopV2() {
     transmitLongTone(600, 20000, 0, "LL");
 
     delay(500);
-    const char* morseEndCstr = "K".c_str();
+    const char* morseEndCstr = "K";
     transmitMorseString(morseEndCstr, morseUnitTime);
 
     // 5. end of cycle
