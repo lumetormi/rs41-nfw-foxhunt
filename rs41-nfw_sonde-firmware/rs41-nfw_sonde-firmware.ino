@@ -4486,7 +4486,6 @@ void transmitLongTone(int toneHz, int lengthInMs, int radioPwr, String morseMsg)
   setRadioModulation(2);
   setRadioFrequency((foxHuntFrequency - 0.003));
   setRadioPower(radioPwr);
-  radioEnableTx();
 
   transmitMorseString(morseMsgCstr, morseUnitTime);
   delay(500);
