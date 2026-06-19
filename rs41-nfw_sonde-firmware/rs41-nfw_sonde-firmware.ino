@@ -4489,10 +4489,10 @@ void transmitLongTone(int toneHz, int lengthInMs, int radioPwr, String morseMsg)
   radioEnableTx();
 
   transmitMorseString(morseMsgCstr, morseUnitTime);
-  delay(1000);
+  delay(500);
   generateSi4032FmTone(toneHz, lengthInMs);
   buttonHandlerSimplified();
-  delay(1000);
+  delay(500);
   transmitMorseString(morseMsgCstr, morseUnitTime); // Send some morse message, to inform of current level and incoming power lowering
 
   buttonHandlerSimplified();
