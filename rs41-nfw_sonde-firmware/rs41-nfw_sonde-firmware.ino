@@ -4490,6 +4490,7 @@ void transmitLongTone(int toneHz, int lengthInMs, int radioPwr, String morseMsg)
 
   transmitMorseString(morseMsgCstr, morseUnitTime);
   delay(500);
+  buttonHandlerSimplified();
   generateSi4032FmTone(toneHz, lengthInMs);
   buttonHandlerSimplified();
   delay(500);
