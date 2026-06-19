@@ -4482,15 +4482,17 @@ void foxHuntModeLoop() {
 }
 
 void transmitLongTone(int toneHz, int lengthInMs, int radioPwr, String morseMsg) {
+  const char* morseMsgCstr = morseMsg.c_str();
   setRadioModulation(2);
   setRadioFrequency((foxHuntFrequency - 0.003));
   setRadioPower(radioPwr);
   radioEnableTx();
 
+  transmitMorseString(morseMsgCstr, morseUnitTime);
+  delay(1000);
   generateSi4032FmTone(toneHz, lengthInMs);
   buttonHandlerSimplified();
   delay(1000);
-  const char* morseMsgCstr = morseMsg.c_str();
   transmitMorseString(morseMsgCstr, morseUnitTime); // Send some morse message, to inform of current level and incoming power lowering
 
   buttonHandlerSimplified();
